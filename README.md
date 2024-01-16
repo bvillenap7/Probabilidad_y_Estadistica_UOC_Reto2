@@ -5,7 +5,7 @@
 Código de entrega para la asignatura de Probabilidad y Estadística.    
 
 Entrega con contenido en R:    
-- `PEC 2`
+- `PEC 2.Rmd`
   
 Entregable en html: 
 - `PEC-2.html`        
