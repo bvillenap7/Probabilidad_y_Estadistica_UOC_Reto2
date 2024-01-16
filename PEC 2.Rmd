@@ -1,0 +1,237 @@
+---
+title: 'Probabilidad y estadística: PEC2'
+author: "UOC"
+date: ''
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document: default
+fontsize: 12pt
+linkcolor: blue
+---
+
+# NOMBRE: Borja Villena Pardo
+
+Indique claramente el nombre y apellidos en la primera página del informe. Resuelva los ejercicios usando R siempre que sea necesario, es importante mostrar cada uno de los pasos realizados para llegar al resultado final. Indique en cada caso qué instrucciones de R ha usado y las salidas que se obtienen.
+
+**El informe final se entregará a través del moodle en un archivo con formato “pdf” o "html".**
+
+## Problema 1
+
+(4 puntos) Los datos del archive LasVegas.csv, obtenidas del repositorio UCI (https://archive-beta.ics.uci.edu/ml/datasets) contienen información sobre las reseñas redactadas en TripAdvisor por clientes de 21 hoteles de Las Vegas. Importe los datos al programa R y observe los nombres de las variables. 
+
+```{r,eval=TRUE,echo=TRUE}
+#Cargar datos
+
+#Usamos función read.csv2 para leer archivo CSV, el cual usa como separador ';' 
+# y como separador decimal ','. Lo asignamos a variabale 'data'
+
+data <- read.csv2('LasVegas.csv')
+
+```
+
+a)  La variable _Traveler.type_ indica el tipo de viajero clasificado en _Business, Couples, Families, Friends, Solo_ (según si se han hospedado en el hotel por negocios, en pareja, en familia, con amigos o solos). La variable _Hotel.stars_ indica el número de estrellas del hotel que pueden ser 3, 3.5, 4, 4.5 o 5.
+Elabore una tabla de contingencia entre las variables _Traveler.type_ y _Hotel.stars_:
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+
+#Para realizar la tabla de contingencia usaremos la función table. Cada fila
+#corresponderá a 'Traveler.type' y las columnas a 'Hotel.stars'
+
+tabla <- table(data$Traveler.type, data$Hotel.stars)
+print(tabla)
+```
+
+b)  Si escogemos un individuo de la base de datos al azar ¿cuál es la probabilidad que corresponda a un cliente que se ha hospedado con amigos y en un hotel de 5 estrellas?
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+
+#Calculamos la probabilidad. Para ello tendremos que obtener el cociente del
+# número de tipo 'Friends' en hoteles de 5 estrellas, entre el total de registros
+# de nuestra base de datos.
+
+prob_f_5 <- round(((tabla[4,5] / nrow(data))*100),2)
+cat(prob_f_5,'%')
+```
+
+c)  ¿Cuál es la probabilidad que un cliente que viaja por negocios se haya hospedado en un hotel de 3 estrellas? 
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+
+#Calculamos la probabilidad. Para ello tendremos que obtener el cociente del
+# número de tipo 'Business' en hoteles de 3 estrellas, entre el total de registros
+# de tipo 'Business' en todos los hoteles.
+
+#Primero calculamos el total de registros de tipo 'Business' usando la tabla de
+#contingencias creada anteriormente. Para ello vamos a usar un loop for.
+
+row_b <- c(1,2,3,4,5)
+total_b <- 0
+
+for (i in row_b){
+  m = tabla[1, i]
+  total_b = total_b + m 
+}
+
+#Ahora calculamos la probabilidad.
+
+prob_b_3 <- round((tabla[1,1] / total_b)*100,2)
+cat(prob_b_3,'%')
+```
+
+d)  ¿Cuál es la probabilidad que un cliente que se ha hospedado en un hotel de 4 estrellas viaje en pareja?
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+
+#Calculamos la probabilidad. Para ello tendremos que obtener el cociente del
+# número de tipo 'Couples' en hoteles de 4 estrellas, entre el total de registros
+# de hoteles de '4 estrellas'.
+
+#Primero calculamos el total de registros de hoteles de 4 estrellas usando la 
+#tabla de contingencias creada anteriormente. Para ello vamos a usar un loop for.
+
+col_4 <- c(1,2,3,4,5)
+total_4 <- 0
+
+for (i in col_4){
+  m = tabla[i, 3]
+  total_4 = total_4 + m 
+}
+
+#Ahora calculamos la probabilidad.
+
+prob_col_4 <- round((tabla[2,3] / total_4*100),2)
+cat(prob_col_4,'%')
+
+```
+
+## Problema 2
+
+(3 puntos) Continuamos con los datos del problema anterior. 
+
+a)  Si escogemos un cliente de la base de datos al azar. ¿Cuál es la probabilidad que se hospede en un hotel de 5 estrellas? 
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+
+
+total_5 <- 0
+
+for (i in col_4){
+  m = tabla[i, 5]
+  total_5 = total_5 + m 
+}
+
+prob_5 <- round(((total_5 / nrow(data))*100),2)
+cat(prob_5,'%')
+```
+
+b)  Escogemos al azar 10 clientes de la base de datos, con reposición. Consideramos la variable que nos indica el número de clientes, entre los 10, que se hospedan en un hotel de 5 estrellas.
+
+    i.)  ¿Qué distribución sigue esta variable? ¿De qué parámetros?
+    
+    ```{r eval=TRUE,echo=TRUE}
+#Espacio para solución
+
+cat('La distribución que sigue esta variable es una distribución Binominal.',
+      '\nEsta distribución está descrita por dos parámetros:\n\n',
+      '- n (el número de experimentos realizados, en nuestro caso n = 10))\n',
+      '- p (probabilidad de éxito, es decir, probabilidad de que un cliente de',
+      'se haya hospedado en un hotel de 5 estrellas, en nuestro caso prob_5.', 
+      '\n\nEste tipo de distribución suele usarse para modelizar el',
+      'número de aciertos en una muestra n extraída, con reemplazo de una',
+      'población N.')
+
+
+```
+  
+    ii.) ¿Cuál es la probabilidad que exactamente 3 de los 10 se hospeden en un hotel de 5 estrellas? 
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+
+
+#Calculamos la probabilidad en tantos por cien redondeando a dos decimales usando
+#la función de probabilidad binominal dbinom. Para ello usaremos un número de 
+#ensayos 'k = 3', un tamaño de muestra de 'size = 10' y la probabilidad de éxito 
+#calculada en el apartado anterior 'prob_5'.
+
+k <- 3
+prob_3d10 <- dbinom(k, size = 10, prob = prob_5/100, log = FALSE)
+cat(round(prob_3d10*100, 2),'%')
+```
+
+
+
+c)  Supongamos ahora que sabemos que entre los que se hospedan en un hotel de 5 estrellas el 25% usa el pàrquing del hotel. Sabemos también que un 30% de los clientes de la base de datos que han usado el pàrquing de su hotel se han hospedado en un hotel de 5 estrellas. ¿Cuál es la probabilidad que un cliente use el pàrquing del hotel?
+    
+    ```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+
+#Primero calculamos los clientes que usan parking con los datos facilitados
+    
+park_h5 <- (25*total_5)/100
+cat('- El número de clientes que usa parking en hoteles de 5 estrellas es',
+    park_h5)
+
+total_data_park = (100*park_h5)/30
+cat('- El número total de personas que usa parking en toda la bbdd es',
+    total_data_park)
+
+#Ahora calculamos la probabilidad 
+
+prob_park <- round(((total_data_park / nrow(data))*100),2)
+cat('- La probabilidad de que un cliente use el parking del hotel es del',
+    prob_park, '%')
+```
+  
+
+## Problema 3
+
+(3 puntos) Supongamos ahora que sabemos que la edad de los clientes de uno de estos hoteles se distribuye siguiendo una distribución normal de media 52 y desviación típica 11. 
+Escogemos un cliente al azar: 
+
+a)  ¿Cuál es la probabilidad que tenga más de 60 años? 
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+edad <- 60
+mu <- 52
+sigma <- 11
+prob_edad_M60 <- round((pnorm(edad, mu, sigma, lower.tail = FALSE)*100),2)
+
+cat('La probabilidad de que un cliente tenga más de 60 años es del',
+    prob_edad_M60, '%')
+
+```
+
+b)  ¿Cuál es la probabilidad que tenga menos de 40 años?
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+edad_b <- 40
+
+prob_edad_m40 <- round((pnorm(edad_b, mu, sigma, lower.tail = TRUE)*100),2)
+
+cat('La probabilidad de que un cliente tenga menos de 40 años es del',
+    prob_edad_m40, '%')
+
+```
+
+c)  Encuentre una edad de forma que el 75% de los clientes de este hotel sean menores que ese valor y el 25% de los clientes sean mayores.
+
+```{r,eval=TRUE,echo=TRUE}
+#Espacio para solución
+q3 <- 75/100
+
+edad_q3 <- round(qnorm(q3, mu, sigma),0)
+
+cat('La edad que coincide con el tercer cuartil de las edades de todos los',
+    'clientes es',edad_q3, 'años')
+
+```
